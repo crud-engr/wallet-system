@@ -10,5 +10,6 @@ export const TransactionStatus = {
   FAILED: 'FAILED',
 } as const;
 
-// This is hardcoded here for the purpose of this project, but best practise is config/env
+// These are hardcoded here for the purpose of this project, but best practise is config/env
 export const MIN_FUND_AMOUNT = 50;
+export const MIN_WITHDRAWAL_AMOUNT = 50;
