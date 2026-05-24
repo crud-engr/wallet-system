@@ -7,7 +7,8 @@ export function validate(schema: ZodSchema) {
     const result = schema.safeParse(req.body);
     if (!result.success) {
       const message = result.error.errors.map((e) => e.message).join(", ");
-      throw new AppError(message, 422);
+      next(new AppError(message, 422));
+      return;
     }
     req.body = result.data;
     next();

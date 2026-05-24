@@ -19,6 +19,20 @@ router.use(authenticate);
  *   get:
  *     summary: Get the authenticated user's transaction history
  *     tags: [Transactions]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *         description: Number of transactions per page
  *     responses:
  *       200:
  *         description: Transactions retrieved successfully
@@ -30,24 +44,40 @@ router.use(authenticate);
  *                 - type: object
  *                   properties:
  *                     data:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: string
- *                           amount:
- *                             type: number
- *                             example: 500.00
- *                           type:
- *                             type: string
- *                             enum: [FUND, TRANSFER, WITHDRAWAL]
- *                           status:
- *                             type: string
- *                             enum: [PENDING, SUCCESS, FAILED]
- *                           created_at:
- *                             type: string
- *                             format: date-time
+ *                       type: object
+ *                       properties:
+ *                         transactions:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               id:
+ *                                 type: string
+ *                               amount:
+ *                                 type: number
+ *                                 example: 500.00
+ *                               type:
+ *                                 type: string
+ *                                 enum: [FUND, TRANSFER, WITHDRAWAL]
+ *                               status:
+ *                                 type: string
+ *                                 enum: [PENDING, SUCCESS, FAILED]
+ *                               reference:
+ *                                 type: string
+ *                               createdAt:
+ *                                 type: string
+ *                                 format: date-time
+ *                         pagination:
+ *                           type: object
+ *                           properties:
+ *                             page:
+ *                               type: integer
+ *                             limit:
+ *                               type: integer
+ *                             total:
+ *                               type: integer
+ *                             pages:
+ *                               type: integer
  *       401:
  *         description: Missing or invalid token
  *         content:

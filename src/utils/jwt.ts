@@ -2,7 +2,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import { AppError } from "@/utils/errors";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? "7d";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN!;
 
 export interface TokenPayload extends JwtPayload {
   sub: string;

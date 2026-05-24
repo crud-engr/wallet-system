@@ -58,7 +58,6 @@ model Transaction {
   // Decimal(20,2) — consistent precision with Wallet.balance
   amount      Decimal           @db.Decimal(20, 2)
   reference   String            @unique @default(uuid())
-  description String?
 
   // Nullable because FUND has no sender and WITHDRAWAL has no receiver
   senderWalletId   String?
