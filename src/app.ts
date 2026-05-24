@@ -3,6 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 import { globalErrorHandler } from '@/middleware/error';
 import { swaggerSpec } from '@/config/swagger';
 import authRoutes from '@/modules/auth/auth.routes';
+import walletRoutes from '@/modules/wallet/wallet.routes';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/wallet', walletRoutes);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/api/docs.json', (_req, res) => {
@@ -21,9 +23,7 @@ app.get('/api/docs.json', (_req, res) => {
   res.send(swaggerSpec);
 });
 
-// import walletRoutes from "@/modules/wallet/wallet.routes";
 // import transactionRoutes from "@/modules/transaction/transaction.routes";
-// app.use("/api/wallet", walletRoutes);
 // app.use("/api/transactions", transactionRoutes);
 
 // Must be registered AFTER all routes — Express identifies error handlers by
