@@ -1,5 +1,8 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { globalErrorHandler } from '@/middleware/error';
+import { swaggerSpec } from '@/config/swagger';
+import authRoutes from '@/modules/auth/auth.routes';
 
 const app = express();
 
@@ -10,11 +13,16 @@ app.get('/health', (_req, res) => {
   res.json({ success: true, message: 'Wallet system is running' });
 });
 
-// import authRoutes from "@/routes/auth";
-// import walletRoutes from "@/routes/wallet";
-// import transactionRoutes from "@/routes/transaction";
-//
-// app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/docs.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// import walletRoutes from "@/modules/wallet/wallet.routes";
+// import transactionRoutes from "@/modules/transaction/transaction.routes";
 // app.use("/api/wallet", walletRoutes);
 // app.use("/api/transactions", transactionRoutes);
 
