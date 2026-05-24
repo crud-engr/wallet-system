@@ -20,7 +20,7 @@ enum TransactionStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   name      String
   password  String
@@ -32,7 +32,7 @@ model User {
 }
 
 model Wallet {
-  id      String  @id @default(cuid())
+  id      String  @id @default(uuid())
   userId  String  @unique
   // Decimal(20,2) supports balances up to 18 digits before the decimal point,
   // safe for high-value financial amounts without floating-point drift.
@@ -52,12 +52,12 @@ model Wallet {
 }
 
 model Transaction {
-  id          String            @id @default(cuid())
+  id          String            @id @default(uuid())
   type        TransactionType
   status      TransactionStatus @default(PENDING)
   // Decimal(20,2) — consistent precision with Wallet.balance
   amount      Decimal           @db.Decimal(20, 2)
-  reference   String            @unique @default(cuid())
+  reference   String            @unique @default(uuid())
   description String?
 
   // Nullable because FUND has no sender and WITHDRAWAL has no receiver
