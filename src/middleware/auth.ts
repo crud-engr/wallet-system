@@ -6,11 +6,16 @@ export function authenticate(req: Request, _res: Response, next: NextFunction): 
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    throw new AppError("Authentication token required.", 401);
+    next(new AppError("Authentication token required.", 401));
+    return;
   }
 
-  const token = authHeader.slice(7);
-  const payload: TokenPayload = verifyToken(token);
-  req.user = { id: payload.sub };
-  next();
+  try {
+    const token = authHeader.slice(7);
+    const payload: TokenPayload = verifyToken(token);
+    req.user = { id: payload.sub };
+    next();
+  } catch (err) {
+    next(err);
+  }
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import { globalErrorHandler } from '@/middleware/error';
 import { swaggerSpec } from '@/config/swagger';
+import { sendError } from '@/utils/response';
 import authRoutes from '@/modules/auth/auth.routes';
 import walletRoutes from '@/modules/wallet/wallet.routes';
 import transferRoutes from '@/modules/transfer/transfer.routes';
@@ -28,6 +29,8 @@ app.get('/api/docs.json', (_req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
+
+app.use((_req, res) => sendError(res, 'Route not found.', 404));
 
 // Must be registered AFTER all routes — Express identifies error handlers by
 // their 4-parameter signature (err, req, res, next).

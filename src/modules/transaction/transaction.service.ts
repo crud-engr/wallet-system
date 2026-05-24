@@ -1,29 +1,40 @@
 import prisma from '@/prisma';
-import { AppError } from '@/utils/errors';
 
-export async function getTransactions(userId: string) {
-  const wallet = await prisma.wallet.findUnique({ where: { userId } });
-  if (!wallet) throw new AppError('Wallet not found.', 404);
+export async function getTransactions(userId: string, page: number, limit: number) {
+  const skip = (page - 1) * limit;
 
-  const transactions = await prisma.transaction.findMany({
-    where: {
-      OR: [{ senderWalletId: wallet.id }, { receiverWalletId: wallet.id }],
+  const where = {
+    OR: [
+      { senderWallet: { userId } },
+      { receiverWallet: { userId } },
+    ],
+  };
+
+  const [transactions, total] = await Promise.all([
+    prisma.transaction.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        amount: true,
+        type: true,
+        status: true,
+        reference: true,
+        createdAt: true,
+      },
+    }),
+    prisma.transaction.count({ where }),
+  ]);
+
+  return {
+    transactions,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
     },
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      amount: true,
-      type: true,
-      status: true,
-      createdAt: true,
-    },
-  });
-
-  return transactions.map((tx) => ({
-    id: tx.id,
-    amount: tx.amount,
-    type: tx.type,
-    status: tx.status,
-    created_at: tx.createdAt,
-  }));
+  };
 }
