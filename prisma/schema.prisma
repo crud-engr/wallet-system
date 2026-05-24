@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  FUND
+  TRANSFER
+  WITHDRAWAL
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  wallet    Wallet?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Wallet {
+  id      String  @id @default(cuid())
+  userId  String  @unique
+  // Decimal(20,2) supports balances up to 18 digits before the decimal point,
+  // safe for high-value financial amounts without floating-point drift.
+  balance Decimal @default(0) @db.Decimal(20, 2)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Separate relations for sent vs received so we can query each direction
+  // independently without a self-referencing ambiguity.
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  // Decimal(20,2) — consistent precision with Wallet.balance
+  amount      Decimal           @db.Decimal(20, 2)
+  reference   String            @unique @default(cuid())
+  description String?
+
+  // Nullable because FUND has no sender and WITHDRAWAL has no receiver
+  senderWalletId   String?
+  receiverWalletId String?
+
+  senderWallet   Wallet? @relation("SentTransactions", fields: [senderWalletId], references: [id])
+  receiverWallet Wallet? @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Composite index: most history queries filter by wallet + time
+  @@index([senderWalletId, createdAt])
+  @@index([receiverWalletId, createdAt])
+  @@map("transactions")
+}
