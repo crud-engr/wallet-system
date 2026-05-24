@@ -6,6 +6,7 @@ import authRoutes from '@/modules/auth/auth.routes';
 import walletRoutes from '@/modules/wallet/wallet.routes';
 import transferRoutes from '@/modules/transfer/transfer.routes';
 import withdrawRoutes from '@/modules/withdraw/withdraw.routes';
+import transactionRoutes from '@/modules/transaction/transaction.routes';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/transfer', transferRoutes);
 app.use('/api/withdraw', withdrawRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/api/docs.json', (_req, res) => {
